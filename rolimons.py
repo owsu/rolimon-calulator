@@ -36,8 +36,6 @@ class Rolimons():
         return name
     
     def displayStats(self, id: int):
-        print("Item: ", self.toName(id))
-        print("Projected: ", self.isProjected(id))
-        print("Value: ", self.getValue(id))
-        print("Demand: ", self.getDemand(id))
+        return f"Item: {self.toName(id)}\nProjected: {self.isProjected(id)}\nValue: {self.getValue(id)}\nDemand: {self.getDemand(id)}\n"
+
 

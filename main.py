@@ -28,6 +28,8 @@ for id in itemsGiving:
     if demandId > theirHighestDemand:
         theirHighestDemand = demandId
 
+
+
 for id in itemsGiving:
     yourSideValue += rolimons.getValue(id)
 
@@ -64,5 +66,4 @@ else: # if we are downgrading then we need a gain that slightly decreases the mo
     else:
         print("You are getting lowballed")
      
-
 

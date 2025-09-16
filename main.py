@@ -37,7 +37,7 @@ client = Client(command_prefix="!", intents=intents)
 GUILD_ID = discord.Object(id=1145805141291827272)
 
 @client.tree.command(name="calculate", description="Determines whether a trade is good or not depending on the ids of the items given and received", guild=GUILD_ID)
-async def calculate(interaction: discord.Interaction, items_giving: str, items_receiving: str):
+async def Calculate(interaction: discord.Interaction, items_giving: str, items_receiving: str):
     if required_role not in [role.name for role in interaction.user.roles]:
         await interaction.response.send_message("You do not have the required role to use this command.", ephemeral=True)
         return
@@ -78,7 +78,8 @@ async def calculate(interaction: discord.Interaction, items_giving: str, items_r
     message += f"Total Value: {theirSideValue}\n"
     message += "\n"
     if isUpgrading: # if we are upgrading then losing up to 5% is fine
-        calculatedRate = 5 / (1 + (theirHighestDemand/100))
+        message += "You are upgrading\n"
+        calculatedRate = 1 / (1 + (theirHighestDemand/100))
         
         if (yourSideValue/theirSideValue <= calculatedRate):
             message += "Adequate trade"
@@ -86,7 +87,7 @@ async def calculate(interaction: discord.Interaction, items_giving: str, items_r
             message += "You are overpaying too much"
     else: # if we are downgrading then we need a gain that slightly decreases the more expensive the item is, but increases based off demand
         message += "You are downgrading\n"
-        calculatedRate = (1/ (2*math.log(yourSideValue, 10))) * (1+ (yourHighestDemand/100))
+        calculatedRate = (1/ (2*math.log(yourSideValue, 10))) * (1 + (yourHighestDemand/100))
 
         if (yourSideValue/theirSideValue >= calculatedRate):
             message += "Adequate trade"
@@ -97,7 +98,7 @@ async def calculate(interaction: discord.Interaction, items_giving: str, items_r
     await interaction.response.send_message(message)
 
 @client.tree.command(name="getinfo", description="Gets information about a specific item", guild=GUILD_ID)
-async def getinfo(interaction: discord.Interaction, item_id: int):
+async def GetInfo(interaction: discord.Interaction, item_id: int):
     if required_role not in [role.name for role in interaction.user.roles]:
         await interaction.response.send_message("You do not have the required role to use this command.", ephemeral=True)
         return
@@ -109,6 +110,39 @@ async def getinfo(interaction: discord.Interaction, item_id: int):
     
     await interaction.response.send_message(item_info)
 
+@client.tree.command(name="posttradead", description="Posts a trade advertisement in Rolimons", guild=GUILD_ID)
+async def PostTradeAd(interaction: discord.Interaction, items_giving: str, items_receiving: str, request_tags: str, player_id: int):
+    if required_role not in [role.name for role in interaction.user.roles]:
+        await interaction.response.send_message("You do not have the required role to use this command.", ephemeral=True)
+        return
     
+    rolimons = Rolimons()
+    message = "Items you are giving:\n"
+    
+    yourSideValue = 0
+    theirSideValue = 0
+    items_giving = [int(i) for i in items_giving.split(",")]
+    items_receiving = [int(i) for i in items_receiving.split(",")]
+
+    print(items_giving, items_receiving, request_tags, player_id)
+    for id in items_giving:
+        yourSideValue += rolimons.getValue(id)
+        message += rolimons.displayStats(id)
+        message += "----------------------\n"
+    
+    message += f"Total Value: {yourSideValue}\n"
+    message += "==========FOR==========\n"
+    message += "Items you are receiving:\n"
+    
+    for id in items_receiving:
+        theirSideValue += rolimons.getValue(id)
+        message += rolimons.displayStats(id)
+        message += "----------------------\n"
+    message += f"Total Value: {theirSideValue}\n"    
+    response = rolimons.postTradeAd(os.getenv("ROLI_COOKIES"), items_giving, items_receiving, request_tags, player_id)
+    print(response)
+    message += f"Response: \n{response}\n"
+
+    await interaction.response.send_message(message)
 
 client.run(token, log_handler=handler, log_level=logging.DEBUG)

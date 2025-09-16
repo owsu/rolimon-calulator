@@ -37,5 +37,20 @@ class Rolimons():
     
     def displayStats(self, id: int):
         return f"Item: {self.toName(id)}\nProjected: {self.isProjected(id)}\nValue: {self.getValue(id)}\nDemand: {self.getDemand(id)}\n"
+    
+    def postTradeAd(self, cookies: str, items_giving: list, items_receiving: list, request_tags: str, player_id: int):
+        url = "https://api.rolimons.com/tradeads/v1/createad"
+        request_tags = request_tags.split(",")
+        roli_cookies = {"_RoliVerification":cookies}
+        data = {
+            "player_id": player_id,
+            "offer_item_ids": items_giving,
+            "request_item_ids": items_receiving,
+            "request_tags": request_tags
+        }
+
+        response = requests.post(url=url, cookies=roli_cookies, json=data)
+        print(response)
+        return response.json()
 
 

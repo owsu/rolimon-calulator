@@ -1,6 +1,7 @@
-# RolimonsProject
+# Rolimons Calculator
 
-A small set of Python scripts that act as a Rolimons helper and Discord bot for calculating trade fairness and posting trade ads automatically.
+A set of Python scripts that act as a Rolimons helper and Discord bot for calculating trade fairness and posting trade ads automatically.
+![Rolimon trade ads](Screenshots/rolimons.png)
 
 ## Summary
 - Provides Discord slash commands to check trade value (`calculate`, `getinfo`).
